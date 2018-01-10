@@ -8,7 +8,7 @@ Redmine::Plugin.register :redmine_slack do
 	url 'https://github.com/sciyoshi/redmine-slack'
 	author_url 'http://www.sciyoshi.com'
 	description 'Slack chat integration'
-	version '0.1'
+	version '0.2'
 
 	requires_redmine :version_or_higher => '0.8.0'
 
@@ -21,4 +21,11 @@ Redmine::Plugin.register :redmine_slack do
 			'display_watchers' => 'no'
 		},
 		:partial => 'settings/slack_settings'
+end
+
+ActionDispatch::Callbacks.to_prepare do
+	require_dependency 'issue'
+	unless Issue.included_modules.include? RedmineSlack::IssuePatch
+		Issue.send(:include, RedmineSlack::IssuePatch)
+	end
 end
